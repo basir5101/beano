@@ -127,8 +127,31 @@ export const shopsStore = {
         {
             "id": 2,
             "name": "Electronics"
+        },
+        {
+            "id": 3,
+            "name": "Groceries"
+        },
+        {
+            "id": 4,
+            "name": "Electronics"
+        },
+        {
+            "id": 5,
+            "name": "Groceries"
+        },
+        {
+            "id": 6,
+            "name": "Electronics"
+        },
+        {
+            "id": 7,
+            "name": "Groceries"
+        },
+        {
+            "id": 8,
+            "name": "Electronics"
         }
-        // Add more categories as needed
     ],
     "bannersList": [
         {

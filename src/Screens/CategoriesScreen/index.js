@@ -9,12 +9,14 @@ import PropTypes from 'prop-types'
 
 // import TextInput from 'Components/TextInput'
 // import Card from 'Components/Card'
-// import HorizontalCard from 'Components/Cards/HorizontalCard'
+import HorizontalCard from '../../Components/Cards/HorizontalCard'
 // import StreakView from 'Components/StreakView'
 
 // import Colors from 'Constants/Colors'
-// import Images from '../../Assets/Images'
+import Images from '../../Assets/Images'
 import styles from './styles'
+import TextInput from '../../Components/TextInput'
+import { shopsStore } from '../../Stores/fakeData'
 
 
 // @observer
@@ -23,15 +25,15 @@ class CategoriesScreen extends Component {
   //   navigation: PropTypes.object
   // }
 
-  // constructor(props) {
-  //   super(props)
+  constructor(props) {
+    super(props)
 
-  //   this.state = {
-  //     loading: false,
-  //     query : ''
-  //   }
-  //   // this.TEXTS = LanguageStore.textLocale
-  // }
+    this.state = {
+      loading: false,
+      query : ''
+    }
+    // this.TEXTS = LanguageStore.textLocale
+  }
 
   // setHeader() {
   //   const { navigation } = this.props
@@ -53,24 +55,24 @@ class CategoriesScreen extends Component {
   //   this.setState({ loading: false })
   // }
 
-  // showCards() {
-  //   const { navigation } = this.props
-  //   const {data,isCoffees,isFeat} = this?.props?.route?.params || {}
+  showCards() {
+    const { navigation } = this.props
+    const {data,isCoffees,isFeat} = this?.props?.route?.params || {}
 
-  //   const {query} = this.state
-  //   return (((data?.length > 0 && data) || (shopsStore.categoriesList && shopsStore.categoriesList))?.filter((item) => query ? item?.name?.toLowerCase()?.includes(query?.toLowerCase()) : item)?.map((data, id) => {
-  //     return (
-  //       <HorizontalCard containerStyle={{width:'90%',alignSelf:'center',marginTop:20}} titleStyle={{fontSize:15}} title={data?.description} buttonText={isCoffees ? 'Details'  :'Stores'} onPress={() => isCoffees ? navigation.navigate('Product Details',{data}) : navigation.navigate(isFeat ? 'CustomerBranchesScreen' : 'StoresScreen', { data })} {...this.props} data={data} />
-  //     )
-  //   })
-  //   )
-  // }
+    const {query} = this.state
+    return (((data?.length > 0 && data) || (shopsStore.categoriesList && shopsStore.categoriesList))?.map((data, id) => {
+      return (
+        <HorizontalCard containerStyle={{width:'90%',alignSelf:'center',marginTop:20}} titleStyle={{fontSize:15}} title={data?.description} buttonText={isCoffees ? 'Details'  :'Stores'} onPress={() => isCoffees ? navigation.navigate('Product Details',{data}) : navigation.navigate(isFeat ? 'CustomerBranchesScreen' : 'StoresScreen', { data })} {...this.props} data={data} />
+      )
+    })
+    )
+  }
 
 
   render() {
     // const data = this?.props?.route?.params?.data
     // const { navigation } = this.props
-    // const { loading } = this.state
+    const { loading } = this.state
 
 
     return (
@@ -78,21 +80,20 @@ class CategoriesScreen extends Component {
       <ScrollView
         // contentContainerStyle={{ flexGrow: 1 }} style={styles.mainView}
       >
-        {/* <View style={styles.titleView}>
-
+         <View style={styles.titleView}>
           <TextInput
             containerStyle={styles.searchInput}
             value={this.state.query}
             iconLeft={{ source: Images.search, isImage: true }}
             onChangeText={(field,val) => this.setState({ query: val })}
             placeholder={'Find your favorite coffee'} isFullWidth={true} />
-        </View> */}
+        </View> 
 
         <View
-          // style={styles.cardView}
+          style={styles.cardView}
         >
 
-          {/* {loading
+          {loading
             ?  <View style={{backgroundColor:'white',flex:1,borderTopRightRadius:35,borderTopLeftRadius:35,paddingTop:30, paddingHorizontal:10}}>
             <SkeletonPlaceholder borderRadius={4} marginBottom={20}>
              <SkeletonPlaceholder.Item flexDirection='column' paddingLeft={'2.5%'}>
@@ -104,7 +105,7 @@ class CategoriesScreen extends Component {
            </SkeletonPlaceholder.Item>
          </SkeletonPlaceholder>
          </View> 
-            : this.showCards()} */}
+            : this.showCards()}
 
         </View>
       </ScrollView>

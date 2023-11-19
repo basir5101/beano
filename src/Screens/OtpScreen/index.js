@@ -170,7 +170,7 @@ class OtpScreen extends Component {
           keyboardType='number-pad'
           onClear={this._handleClear.bind(this)}
           onDelete={this._handleDelete.bind(this)}
-          onKeyPress={this.handleKeyPress.bind(this)}
+          onKeyPress={() => {}}
         />
       </SafeAreaView>
 
