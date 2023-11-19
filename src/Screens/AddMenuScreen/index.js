@@ -1,0 +1,397 @@
+/* eslint-disable no-magic-numbers */
+import React, { Component } from 'react'
+import { View, ScrollView, Image,Dimensions } from 'react-native'
+
+import { observer } from 'mobx-react'
+import { autorun } from 'mobx'
+import PropTypes from 'prop-types'
+// import MapView from 'react-native-maps'
+import * as ImagePicker from 'react-native-image-picker'
+
+import test from 'Constants/test'
+
+
+import { shopsStore, authStore, loadingModalStore } from 'Stores/StoreFactory'
+
+import CheckBox from '@react-native-community/checkbox'
+import TextInput from 'Components/TextInput'
+import Button from 'Components/Buttons/Button'
+import Card from 'Components/Card'
+import Text from 'Components/Text'
+import HorizontalCard from 'Components/Cards/HorizontalCard'
+import StreakView from 'Components/StreakView'
+
+import Colors from 'Constants/Colors'
+import Images from '../../Assets/Images'
+import styles from './styles'
+
+
+@observer
+class AddMenuScreen extends Component {
+  static propTypes = {
+    navigation: PropTypes.object
+  }
+
+  constructor(props) {
+    super(props)
+
+    this.state = {
+      streak: 21,
+      loading: false,
+      option1:{
+        checkBoxEnabled:false,
+        price:0,
+        description:''
+      },
+      option2:{
+        checkBoxEnabled:false,
+        price:0,
+        description:''
+      },
+      option3:{
+        checkBoxEnabled:false,
+        price:0,
+        description:''
+      },
+      selectedImage: '',
+      productName: '',
+      description: '',
+      branchTitle: '',
+      branchEmail: '',
+      branchNumber: '+971',
+    }
+    // this.TEXTS = LanguageStore.textLocale
+  }
+
+  setHeader() {
+    const { navigation } = this.props
+
+
+    navigation.setOptions({
+      headerTitle: () => <View><Text style={{ fontSize: 25, color: Colors.middleBlue, }}>Add Menu</Text></View>,
+      // headerLeft: () => <View style={styles.headerLeftButtonsContainer}></View>,
+      headerRight: () => {
+        return (<View></View>)
+      }
+    })
+  }
+
+  showSaluteTitle() {
+    const isLoggedIn = authStore.user &&( authStore.user.username || authStore?.user?.user?.username)
+    return (
+      <View>
+        <Text style={styles.title}>
+          Hello {isLoggedIn ? 'Firas' : ''}
+        </Text>
+        <Text style={styles.subTitle}>
+          Feeling a coffee?
+        </Text >
+      </View>
+    )
+  }
+
+  async componentDidMount() {
+    autorun(() => this.setHeader())
+    this.setState({ loading: false })
+  }
+
+  setInput(name, value) {
+    this.setState({ [name]: value })
+  }
+
+  showVendorInputs() {
+    const data = [
+      { title: 'productName', text: 'Leila Geller', image: Images.tabBar.person, imageType: 'person', placeholder: 'Product Name', name: 'productName' },
+      { title: 'description', text: 'Leila Geller', image: Images.tabBar.person, imageType: 'person', placeholder: 'Description', name: 'description' },
+      { title: 'email', text: 'leila.geller@gmail.com', image: Images.mail, imageType: 'mail', placeholder: 'Johndoe@gmail.com', usedForSignIn: true, name: 'branchEmail' },
+      { title: 'phone', text: 'leila.geller@gmail.com', image: Images.mail, imageType: 'mail', placeholder: '+1 123456789', usedForSignIn: true, name: 'branchNumber' },
+    ]
+
+    return (
+      <View style={{ width: Dimensions.get('window').width,alignItems:'center' }}>
+        {
+          data && data.map((d) => {
+            // const showSignInTabs = (signUp || d.usedForSignIn)
+            return (
+              <View>
+                {<View style={styles.textView}>
+                  {/* <View style={{ flexDirection: 'row', marginTop: 5, marginHorizontal: 20, }}>
+                    <Image source={d.image} style={styles.cardImage} />
+
+                    <Text style={{ fontSize: 15, color: Colors.middleBlue, opacity: 0.5, marginLeft: 12 }}>{d.title}</Text>
+                  </View> */}
+                  <TextInput
+                    value={this.state[d.name]}
+                    field={d.name}
+                    onChangeText={(field, value) => this.setInput(field, value)}
+                    hasShadow={false}
+                    isPassword={d.isPassword}
+                    placeholder={d.placeholder}
+                    containerStyle={{ borderBottomLeftRadius: 8, borderBottomRightRadius: 8, backgroundColor: '#F9F9F9', color: Colors.middleBlue, width: '100%', height: 40, fontSize: 20 }} />
+                </View>}
+              </View>
+            )
+          })
+        }
+      </View>
+    )
+  }
+
+  showStores() {
+    const { navigation } = this.props
+
+    return (shopsStore.storesList && shopsStore.storesList.map((data, id) => {
+      return (
+        <HorizontalCard containerStyle={{height:130,borderWidth:1,borderColor:'red'}} title={data.name} buttonText={'Stores'} onPress={() => navigation.navigate('StoresScreen', { data })} {...this.props} data={data} />
+      )
+    })
+    )
+  }
+
+  async chooseImage() {
+    const options = {     
+      maxWidth: 900,
+      maxHeight: 400,
+      mediaType: 'photo',
+      includeBase64: true,
+      storageOptions: {
+        skipBackup: true,
+        path: 'images'
+      }
+    }
+    await ImagePicker.launchImageLibrary(options, response => {
+      if (response.didCancel) {
+      } else if (response.error) {
+      } else if (response.customButton) {
+      } else {
+        const source = { uri: response.uri }
+        this.setState({ selectedImage: `data:image/png;base64,${response.assets[0].base64}` })
+        // setImage(source);
+      }
+    })
+
+    // You can also use as a promise without 'callback':
+    // const result = await launchImageLibrary(options)
+  }
+
+  async createNewProduct() {
+    const { navigation } = this.props
+    const { productName,option1,option2,option3, description, branchTitle, branchEmail, branchNumber, selectedImage } = this.state
+
+    //(branchName.length > 0 && description.length > 0 && branchTitle.length > 0 && branchEmail.length > 0 && branchNumber.length > 0 && selectedImage.length > 0)
+    const params = {
+      "store": this.props.route.params.name,
+      "branch": this.props.route.params.branch,
+      "name": productName,
+      "title": productName,
+      "description": description,
+      "options": [
+          {
+              "tag": "Size",
+              "type": "oneOf",
+              "values": [
+                  {
+                      "title": "Small",
+                      "description": option1.description,
+                      "price": option1.price
+                  },
+                  {
+                      "title": "Medium",
+                      "description": option2.description,
+                      "price": option2.price
+                  },
+                  {
+                      "title": "Large",
+                      "description": option3.description,
+                      "price": option3.price
+                  }
+              ]
+          },
+          {
+              "tag": "Remove",
+              "type": "manyOf",
+              "values": [
+                  {
+                      "title": "Sugar",
+                      "description": "Remove Sugar",
+                      "price": "0"
+                  },
+                  {
+                      "title": "Cuttlery",
+                      "description": "Remove Cuttelry",
+                      "price": "0"
+                  }
+              ]
+          }
+      ],
+      "image":selectedImage
+  }
+      
+    loadingModalStore.show = true
+    await shopsStore.createNewProduct(params)
+    loadingModalStore.show = false
+    navigation.pop()
+
+  }
+
+
+  render() {
+    const { productName, description} = this.state
+    const enabled = productName && description && (option1?.price || option2?.price || option3?.price)
+    const { selectedImage,option1,option2,option3 } = this.state
+
+    return (
+
+      <ScrollView contentContainerStyle={{ flexGrow: 1 }} style={styles.mainView}>
+
+        <View style={styles.cardView}>
+
+          {/* <Text style={{ fontSize: 25, color: Colors.middleBlue, }}>Add Store</Text> */}
+
+
+          {this.showVendorInputs()}
+        <View style={{flexDirection:'column',width:'90%'}}>
+        {true && <View style={{ flexDirection: 'row', width:'100%'}}>
+          <CheckBox
+            disabled={false}
+            boxType={'square'}
+            tintColors={'#9E663C'}
+            onCheckColor={Colors.headerLightPink}
+            onFillColor={Colors.middleBlue}
+            onTintColor={Colors.middleBlue}
+            value={option1.checkBoxEnabled}
+           onValueChange={(newValue) => this.setState(prev=>({option1:{
+            checkBoxEnabled:!prev.option1.checkBoxEnabled,
+            price:prev.option1.price
+           }}))}
+          />
+          <Text style={{ marginLeft: 10, marginTop: 5, fontSize: 15, color: Colors.middleBlue }}>Small</Text>
+          <TextInput 
+          value={option1.description}
+          onChangeText={(field, value) => this.setState(prev=>({option1:{
+            price:prev.option1.price,
+            checkBoxEnabled:prev.option1.checkBoxEnabled,
+            description:value
+          }}))}
+          hasShadow={false}
+          isPassword={false}
+          placeholder={'Description'}
+          containerStyle={{ borderBottomLeftRadius: 8, borderBottomRightRadius: 8, backgroundColor: '#F9F9F9', color: Colors.middleBlue, width: '50%', height: 40, fontSize: 20,marginLeft:10 }}
+          />
+          <TextInput 
+          value={option1.price}
+          onChangeText={(field, value) => this.setState(prev=>({option1:{
+            price:value,
+            checkBoxEnabled:prev.option1.checkBoxEnabled
+          }}))}
+          hasShadow={false}
+          isPassword={false}
+          placeholder={'price'}
+          containerStyle={{ borderBottomLeftRadius: 8, borderBottomRightRadius: 8, backgroundColor: '#F9F9F9', color: Colors.middleBlue, width: '30%', height: 40, fontSize: 20,marginLeft:10 }}
+          />
+        </View>}
+        {true && <View style={{ flexDirection: 'row', width:'100%'}}>
+          <CheckBox
+            disabled={false}
+            boxType={'square'}
+            tintColors={'#9E663C'}
+            onCheckColor={Colors.headerLightPink}
+            onFillColor={Colors.middleBlue}
+            onTintColor={Colors.middleBlue}
+            value={option2.checkBoxEnabled}
+            onValueChange={(newValue) => this.setState(prev=>({option2:{
+              checkBoxEnabled:!prev.option2.checkBoxEnabled,
+              price:prev.option2.price
+             }}))}
+          />
+                    <Text style={{ marginLeft: 10, marginTop: 5, fontSize: 15, color: Colors.middleBlue }}>Medium</Text>
+          <TextInput 
+          value={option2.description}
+          onChangeText={(field, value) => this.setState(prev=>({option2:{
+            price:prev.option2.price,
+            checkBoxEnabled:prev.option2.checkBoxEnabled,
+            description:value
+          }}))}
+          hasShadow={false}
+          isPassword={false}
+          placeholder={'Description'}
+          containerStyle={{ borderBottomLeftRadius: 8, borderBottomRightRadius: 8, backgroundColor: '#F9F9F9', color: Colors.middleBlue, width: '50%', height: 40, fontSize: 20,marginLeft:10 }}
+          />
+
+          
+          
+          <TextInput 
+          value={option2.description}
+          onChangeText={(field, value) => this.setState(prev=>({option2:{
+            price:value,
+            checkBoxEnabled:prev.option2.checkBoxEnabled
+          }}))}
+          hasShadow={false}
+          isPassword={false}
+          placeholder={'price'}
+          containerStyle={{ borderBottomLeftRadius: 8, borderBottomRightRadius: 8, backgroundColor: '#F9F9F9', color: Colors.middleBlue, width: '30%', height: 40, fontSize: 20,marginLeft:10 }}
+          />
+        </View>}
+        {true && <View style={{ flexDirection: 'row', width:'100%'}}>
+          <CheckBox
+            disabled={false}
+            boxType={'square'}
+            tintColors={'#9E663C'}
+            onCheckColor={Colors.headerLightPink}
+            onFillColor={Colors.middleBlue}
+            onTintColor={Colors.middleBlue}
+            value={option3.checkBoxEnabled}
+            onValueChange={(newValue) => this.setState(prev=>({option3:{
+              checkBoxEnabled:!prev.option3.checkBoxEnabled,
+              price:prev.option3.price
+             }}))}
+          />
+          <Text style={{ marginLeft: 10, marginTop: 5, fontSize: 15, color: Colors.middleBlue }}>Large</Text>
+          <TextInput 
+          value={option3.description}
+          onChangeText={(field, value) => this.setState(prev=>({option3:{
+            price:prev.option3.price,
+            checkBoxEnabled:prev.option3.checkBoxEnabled,
+            description:value
+          }}))}
+          hasShadow={false}
+          isPassword={false}
+          placeholder={'Description'}
+          containerStyle={{ borderBottomLeftRadius: 8, borderBottomRightRadius: 8, backgroundColor: '#F9F9F9', color: Colors.middleBlue, width: '50%', height: 40, fontSize: 20,marginLeft:10 }}
+          />
+          <TextInput 
+          value={option3.price}
+          onChangeText={(field, value) => this.setState(prev=>({option3:{
+            price:value,
+            checkBoxEnabled:prev.option3.checkBoxEnabled
+          }}))}
+          hasShadow={false}
+          isPassword={false}
+          placeholder={'price'}
+          containerStyle={{ borderBottomLeftRadius: 8, borderBottomRightRadius: 8, backgroundColor: '#F9F9F9', color: Colors.middleBlue, width: '30%', height: 40, fontSize: 20,marginLeft:10 }}
+          />
+        </View>}
+
+        </View>
+          <Button style={{ marginTop: 20, backgroundColor: '#F9F9F9', width: '90%', height: 55, borderRadius: 8, flexDirection: 'row', alignItems: 'center', paddingLeft: 20 }} onPress={() => this.chooseImage()}>
+            <Text style={{ fontSize: 20, color: Colors.middleBlue, flex: 1, }}>Choose Image</Text>
+            {selectedImage.length > 1 && <Image source={{ uri: selectedImage }} style={styles.smallCardImage} />}
+            <View style={{ width: 41, height: 41, borderRadius: 25, alignItems: 'center', justifyContent: 'center', }}>
+              <Image source={Images.imageIcon} style={{ resizeMode: 'contain', width: 18, height: 18 }} />
+            </View>
+          </Button>
+
+          <Button disabled={enabled} style={{ marginTop: 20, backgroundColor: Colors.middleBlue, width: '90%', height: 55, borderRadius: 8, flexDirection: 'row', alignItems: 'center', paddingLeft: 20 }} onPress={() => this.createNewProduct()}>
+            <Text style={{ fontSize: 20, color: Colors.white, marginRight: 41, flex: 1, textAlign: 'center' }}>Add Product</Text>
+          </Button>
+          
+
+        </View>
+
+      </ScrollView>
+
+    )
+  }
+}
+
+export default AddMenuScreen
