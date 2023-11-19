@@ -2,7 +2,7 @@
 import React, { Component } from 'react'
 import { View, Text, ScrollView, StatusBar, RefreshControl, Dimensions, ActivityIndicator } from 'react-native'
 // import { Center, Container, NativeBaseProvider } from 'native-base'
-import { observer } from 'mobx-react'
+// import { observer } from 'mobx-react'
 import PropTypes from 'prop-types'
 // import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
 // import { shopsStore, } from 'Stores/StoreFactory'
@@ -17,7 +17,7 @@ import PropTypes from 'prop-types'
 import styles from './styles'
 
 
-@observer
+// @observer
 class CategoriesScreen extends Component {
   // static propTypes = {
   //   navigation: PropTypes.object
@@ -75,7 +75,9 @@ class CategoriesScreen extends Component {
 
     return (
 
-      <ScrollView contentContainerStyle={{ flexGrow: 1 }} style={styles.mainView}>
+      <ScrollView
+        // contentContainerStyle={{ flexGrow: 1 }} style={styles.mainView}
+      >
         {/* <View style={styles.titleView}>
 
           <TextInput
@@ -86,7 +88,9 @@ class CategoriesScreen extends Component {
             placeholder={'Find your favorite coffee'} isFullWidth={true} />
         </View> */}
 
-        <View style={styles.cardView}>
+        <View
+          // style={styles.cardView}
+        >
 
           {/* {loading
             ?  <View style={{backgroundColor:'white',flex:1,borderTopRightRadius:35,borderTopLeftRadius:35,paddingTop:30, paddingHorizontal:10}}>
